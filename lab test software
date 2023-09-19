@@ -1,0 +1,537 @@
+# i'm beginer please help me to improve this lab test project
+from tkinter import *
+from tkinter import messagebox
+from tkinter import Tk, Frame, Label, Entry, Button, Scrollbar, Canvas, OptionMenu
+from fpdf import FPDF
+import datetime
+
+normal_values = {
+#CBC
+    "TLC": "4,500 - 11,000",
+    "RBC": "Male 4.6-6.5" "Female 3.8-5.8",
+    "Haemoglobin": "Male 13-18" "Female 11.5-16",
+#CBC Absolute Values
+    "PCV/HCT": "Male 40-54" "Female 37-47",
+    "MCV": "Male 76-96" "Female 76-96",
+    "MCH": "Male 27-34" "Female 27-34",
+    "MCHC": "Male 30-37" "Female 30-37",
+    "Platlet Count": "Male 150-400" "Female 150-400",
+    "RWD": "Normal",
+#Differencial Leucocyte Count
+    "Neutrophils": "Adult 50-70" "Child 35-70" "Infant 25-65",
+    "Lymphocytes": "Adult 25-40" "Child 25-60" "Infant 20-70",
+    "Monocytes": "Adult 03-08" "Child 01-06" "Infant 07-20",
+    "Eosinophils": "Adult 01-04" "Child 01-05" "Infant 01-07",
+    "Basophils": "Adult 00-01" "Child 00-01" "Infant 00-02",
+
+#CRP
+    "CRP": "Negative",
+
+#BSR
+    "BSR": "70-100 mg/dL",
+
+#H-Pylori
+    "H-Pylori": "Negative",
+
+#Trop-T
+    "Trop-T": "Negative",
+
+#LFTs
+    "Total Cholesterol": "Low 200" "Borderline 200-239" "Elevated >240",
+    "Triglycerides": "Low 36-200" "Borderline " "Elevated >200",
+    "Total Bilirubin": "Male 0.1-1.2" "Female 0.1-1.2" "Children ",
+    "Total GPT(ALT)": "Male <0.45" "Female <0.34" "Children ",
+    "Total GOT(AST)": "Male 7-24" "Female " "Children ",
+    "Total Alk.Phosphatase": "Male 80-306" "Female 65-306 " "Children <645",
+
+#RFTs
+    "Urea": "Male 17-43" "Female 17-43" "Children 17-43",
+    "Creatanin": "Male 0.7-1.4" "Female 0.7-1.4" "Children 0.6-1.1",
+
+#Lipid Profile
+    "Total Cholesterol": "Low 200" "Borderline 200-239" "Elevated >240",
+    "Triglycerides": "Low 36-200" "Borderline " "Elevated >200",
+
+#GPT ALT
+    "GPT (ALT)": "Male <45" "Female <34" "Children ",
+
+#Uric Acid
+    "Uric Acid": "Negative",
+
+#Urine RE: Chemical Analysis
+    "Colour": "Yellow",
+    "Turbidity": "0",
+    "Sediment": "0",
+    "pH": "4.5-7.5",
+    "Sp.Gravity": "1.005-1.030 After 12hr",
+    "Lecocytes": "Fluid Restrection >1.025",
+    "Glucose": "0",
+    "Albumin": "0",
+    "Ketones": "0",
+    "Bilirubin": "0",
+    "Urbilinogen": "Normal",
+    "Blood": "0",
+#Urine RE: Microscope Analysis
+    "WBCs": "0-4",
+    "RBCs": "0-1",
+    "Puss Cells": "0",
+    "Epith Cells": "0",
+    "Mucus Threads": "0",
+    "Ca-Oxalante Crystals": "0",
+    "Amorphous Urates": "0",
+    "Granular Casts": "0",
+    "Hyline Castes": "0",
+    "Yeast Cells": "0",
+}
+
+units={
+    #CBC
+    "TLC": "/cmm",
+    "RBC": "x10^6/uL",
+    "Haemoglobin": "g/dL",
+#CBC Absolute Values
+    "PCV/HCT": "%",
+    "MCV": "fL",
+    "MCH": "Pg",
+    "MCHC": "g/dL",
+    "Platlet Count": "x10^3/uL",
+    "RWD": "fl",
+    #Differencial Leucocyte Count
+    "Neutrophils": "%",
+    "Lymphocytes": "%",
+    "Monocytes": "%",
+    "Eosinophils": "%",
+    "Basophils": "%",
+   #RFTs
+    "Urea": "mg/dl",
+    "Creatanin": "mg/dl", 
+    #Urine RE: Chemical Analysis
+    "Glucose": "mg/dl",
+    #BSR
+    "BSR": "mg/dL",
+    
+#LFTs
+    "Total Bilirubin": "mg/dl",
+
+    "Total GPT(ALT)": "iu/l",
+
+    "Total GOT(AST)": "u/l",
+    "Total Alk.Phosphatase": "u/l",
+#GPT ALT
+    "GPT (ALT)": "iu/l",
+
+#Urine RE: Microscope Analysis
+    "WBCs": "/HPF",
+    "RBCs": "/HPF",
+    "Puss Cells": "/HPF",
+    "Epith Cells": "/HPF",
+    "Mucus Threads": "/HPF",
+    "Ca-Oxalante Crystals": "/HPF",
+    "Amorphous Urates": "/HPF",
+    "Granular Casts": "/HPF",
+    "Hyline Castes": "/HPF",
+    "Yeast Cells": "/HPF"
+}
+
+current_date = datetime.date.today
+
+class LabReportingSoftware:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Valley Medical Lab")
+        self.root.geometry("1x1")
+
+        self.patient_name = StringVar()
+        self.patient_age = StringVar()
+        self.patient_gender = StringVar()
+        self.tests = {
+            "CBC": BooleanVar(),
+            "CRP": BooleanVar(),
+            "BSR": BooleanVar(),
+            "H-Pylori": BooleanVar(),
+            "Trop-T": BooleanVar(),
+            "Lipids": BooleanVar(),
+            "LFTs": BooleanVar(),
+            "RFTs": BooleanVar(),
+            "ALT": BooleanVar(),
+            "Urine RE": BooleanVar(),
+            "Uric Acid": BooleanVar(),
+            "RA Factor":BooleanVar()
+        }
+
+        self.results = {}
+
+        self.cbc_results = {
+            "TLC": StringVar(),
+            "RBC": StringVar(),
+            "Haemoglobin": StringVar(),
+            "PVC": StringVar(),
+            "MCV": StringVar(),
+            "MCH": StringVar(),
+            "MCHC": StringVar(),
+            "Platlet Count": StringVar(),
+            "RWD": StringVar(),
+            "Neutrophils": StringVar(),
+            "Lymphocytes": StringVar(),
+            "Monocytes": StringVar(),
+            "Eosinophils": StringVar(),
+            "Basophils": StringVar(),
+        }
+        self.crp_result = StringVar()
+
+        self.bsr_result = {
+            "Glucose(F)": StringVar
+        }
+
+        self.h_pylori_result = StringVar()
+
+        self.trop_t_result = StringVar()
+
+        self.lipids_result = {
+            "Total Cholesterol": StringVar(),
+            "Triglycerides": StringVar(),
+        }
+
+        self.LFTs_result = {
+            "Total Bilirubin": StringVar(),
+            "GPT (ALT)": StringVar(),
+            "GOT (AST)": StringVar(),
+            "Alkaline Phosphatase": StringVar(),
+        }
+
+        self.RFTs_result = {
+            "Urea": StringVar(),
+            "Creatanin": StringVar(),
+        }
+
+        self.ALT_result = {
+            "ALT": StringVar(),
+        }
+
+        self.Urine_RE_Result = {
+            "Colour": StringVar(),
+            "Turbidity": StringVar(),
+            "Sediment": StringVar(),
+            "pH": StringVar(),
+            "Sp Gravity": StringVar(),
+            "Lecocytes": StringVar(),
+            "Glucose": StringVar(),
+            "Albumin": StringVar(),
+            "Ketones": StringVar(),
+            "Bilirubin": StringVar(),
+            "Urbilinogen": StringVar(),
+            "Blood/Hb": StringVar(),
+            "WBCs": StringVar(),
+            "RBCs": StringVar(),
+            "Pus Cells": StringVar(),
+            "Epith Cells": StringVar(),
+            "Mucus Threads": StringVar(),
+            "Ca Oxalate-Crystals": StringVar(),
+            "Amorphous Urates": StringVar(),
+            "Granular Casts": StringVar(),
+            "Hyline Casts": StringVar(),
+            "Yeast Cells": StringVar(),
+        }
+
+        self.Uric_Acid_Result = StringVar()
+
+        self.RA_Factor_Result = StringVar()
+
+        self.current_screen = 1
+
+        self.create_widgets()
+
+    def create_widgets(self):
+        if self.current_screen == 1:
+
+            # Screen 1: Patient Information
+            self.screen1 = Toplevel(self.root)
+            self.screen1.title("Valley Medical Lab")
+            self.screen1.geometry("500x700")
+
+            Label(self.screen1, text="Patient Information").pack()
+            Label(self.screen1, text="Patient Name:").pack()
+            Entry(self.screen1, textvariable=self.patient_name).pack()
+            Label(self.screen1, text="Patient Age:").pack()
+            Entry(self.screen1, textvariable=self.patient_age).pack()
+            Label(self.screen1, text="Patient Gender:").pack()
+            Entry(self.screen1, textvariable=self.patient_gender).pack()
+
+            Label(self.screen1, text="Select Lab Tests:").pack()
+            for test, var in self.tests.items():
+                Checkbutton(self.screen1, text=test, variable=var).pack()
+
+            Button(self.screen1, text="Next", command=self.next_screen).pack()
+
+        elif self.current_screen == 2:
+
+            # Screen 2: Result Input
+            self.screen2 = Toplevel(self.root)
+            self.screen2.title("Result Input")
+            self.screen2.geometry("600x750")
+
+            if self.tests["CBC"].get():
+                Label(self.screen2, text="CBC Results").pack()
+                Label(self.screen2, text="TLC:").pack(side="left")
+                Entry(self.screen2, textvariable=self.cbc_results["TLC"]).pack(side="right")
+                Label(self.screen2, text="RBC:").pack()
+                Entry(self.screen2, textvariable=self.cbc_results["RBC"]).pack()
+                Label(self.screen2, text="Haemoglobin:").pack()
+                Entry(self.screen2, textvariable=self.cbc_results["Haemoglobin"]).pack()
+
+                Label(self.screen2, text="PVC:").pack()
+                Entry(self.screen2, textvariable=self.cbc_results["PVC"]).pack()
+                Label(self.screen2, text="MCV:").pack()
+                Entry(self.screen2, textvariable=self.cbc_results["MCV"]).pack()
+                Label(self.screen2, text="MCH:").pack()
+                Entry(self.screen2, textvariable=self.cbc_results["MCH"]).pack()
+                Label(self.screen2, text="MCHC:").pack()
+                Entry(self.screen2, textvariable=self.cbc_results["MCHC"]).pack()
+                Label(self.screen2, text="Platlet Count:").pack()
+                Entry(self.screen2, textvariable=self.cbc_results["Platlet Count"]).pack()
+                Label(self.screen2, text="RWD:").pack()
+                Entry(self.screen2, textvariable=self.cbc_results["RWD"]).pack()
+
+                Label(self.screen2, text="Complex Chemistry:").pack()
+                Label(self.screen2, text="Neutrophils:").pack()
+                Entry(self.screen2, textvariable=self.cbc_results["Neutrophils"]).pack()
+                Label(self.screen2, text="Lymphocytes:").pack()
+                Entry(self.screen2, textvariable=self.cbc_results["Lymphocytes"]).pack()
+                Label(self.screen2, text="Monocytes:").pack()
+                Entry(self.screen2, textvariable=self.cbc_results["Monocytes"]).pack()
+                Label(self.screen2, text="Eosinophils:").pack()
+                Entry(self.screen2, textvariable=self.cbc_results["Eosinophils"]).pack()
+                Label(self.screen2, text="Basophils:").pack()
+                Entry(self.screen2, textvariable=self.cbc_results["Basophils"]).pack()
+                
+            if self.tests["CRP"].get():
+                Label(self.screen2, text="CRP Result:").pack()
+                OptionMenu(self.screen2, self.crp_result, "Positive", "Negative").pack()
+
+            if self.tests["BSR"].get():
+                Label(self.screen2, text="BSR Results").pack()
+                Label(self.screen2, text="Glucose(F):").pack()
+                Entry(self.screen2, textvariable=self.bsr_result["Glucose(F)"]).pack()
+
+            if self.tests["H-Pylori"].get():
+                Label(self.screen2, text="H-Pylori Result:").pack()
+                OptionMenu(self.screen2, self.h_pylori_result, "Positive", "Negative").pack()
+
+            if self.tests["Trop-T"].get():
+                Label(self.screen2, text="Trop-T Result:").pack()
+                OptionMenu(self.screen2, self.trop_t_result, "Positive", "Negative").pack()
+
+            if self.tests["Lipids"].get():
+                Label(self.screen2, text="Lipids Results").pack()
+                Label(self.screen2, text="Total Cholesterol:").pack()
+                Entry(self.screen2, textvariable=self.lipids_result["Total Cholesterol"]).pack()
+                Label(self.screen2, text="Triglycerides:").pack()
+                Entry(self.screen2, textvariable=self.lipids_result["Triglycerides"]).pack()
+
+            if self.tests["RA Factor"].get():
+                Label(self.screen2, text="RA Factor:").pack()
+                OptionMenu(self.screen2, self.RA_Factor_Result, "Postive", "Negative").pack()
+
+            if self.tests["LFTs"].get():
+                Label(self.screen2, text="LFTs Result").pack()
+                Label(self.screen2, text="Total Bilirubin:").pack()
+                Entry(self.screen2, textvariable=self.LFTs_result["Total Bilirubin"]).pack()
+                Label(self.screen2, text="GPT (ALT):").pack()
+                Entry(self.screen2, textvariable=self.LFTs_result["GPT (ALT)"]).pack()
+                Label(self.screen2, text="GOT (AST):").pack()
+                Entry(self.screen2, textvariable=self.LFTs_result["GOT (AST)"]).pack()
+                Label(self.screen2, text="Alkaline Phosphatase:").pack()
+                Entry(self.screen2, textvariable=self.LFTs_result["Alkaline Phosphatase"]).pack()
+
+            if self.tests["RFTs"].get():
+                Label(self.screen2, text="RFTs Result").pack()
+                Label(self.screen2, text="Urea:").pack()
+                Entry(self.screen2, textvariable=self.RFTs_result["Urea"]).pack()
+                Label(self.screen2, text="Creatanin:").pack()
+                Entry(self.screen2, textvariable=self.RFTs_result["Creatanin"]).pack()
+
+            if self.tests["ALT"].get():
+                Label(self.screen2, text="ALT Result:").pack()
+                Entry(self.screen2, textvariable=self.ALT_result["ALT"]).pack()
+
+            if self.tests["Urine RE"].get():
+                Label(self.screen2, text="Urine Result").pack()
+                Label(self.screen2, text="Chemical Analysis").pack
+                Label(self.screen2, text="Colour:").pack()
+                Entry(self.screen2, textvariable=self.Urine_RE_Result["Colour"]).pack()
+                Label(self.screen2, text="Turbidity:").pack()
+                Entry(self.screen2, textvariable=self.Urine_RE_Result["Turbidity"]).pack()
+                Label(self.screen2, text="Sediment:").pack()
+                Entry(self.screen2, textvariable=self.Urine_RE_Result["Sediment"]).pack()
+                Label(self.screen2, text="pH:").pack()
+                Entry(self.screen2, textvariable=self.Urine_RE_Result["pH"]).pack()
+                Label(self.screen2, text="Sp Gravity:").pack()
+                Entry(self.screen2, textvariable=self.Urine_RE_Result["Sp Gravity"]).pack()
+                Label(self.screen2, text="Lecocytes:").pack()
+                Entry(self.screen2, textvariable=self.Urine_RE_Result["Lecocytes"]).pack()
+                Label(self.screen2, text="Glucose:").pack()
+                Entry(self.screen2, textvariable=self.Urine_RE_Result["Glucose"]).pack()
+                Label(self.screen2, text="Albumin:").pack()
+                Entry(self.screen2, textvariable=self.Urine_RE_Result["Albumin"]).pack()
+                Label(self.screen2, text="Ketones:").pack()
+                Entry(self.screen2, textvariable=self.Urine_RE_Result["Ketones"]).pack()
+                Label(self.screen2, text="Bilirubin:").pack()
+                Entry(self.screen2, textvariable=self.Urine_RE_Result["Bilirubin"]).pack()
+                Label(self.screen2, text="Urbilinogen:").pack()
+                Entry(self.screen2, textvariable=self.Urine_RE_Result["Urbilinogen"]).pack()
+                Label(self.screen2, text="Blood/Hb:").pack()
+                Entry(self.screen2, textvariable=self.Urine_RE_Result["Blood/Hb"]).pack()
+
+                Label(self.screen2, text="Microscopic Analysis").pack()
+                Label(self.screen2, text="WBCs:").pack()
+                Entry(self.screen2, textvariable=self.Urine_RE_Result["WBCs"]).pack()
+                Label(self.screen2, text="RBCs:").pack()
+                Entry(self.screen2, textvariable=self.Urine_RE_Result["RBCs"]).pack()
+                Label(self.screen2, text="Pus Cells:").pack()
+                Entry(self.screen2, textvariable=self.Urine_RE_Result["Pus Cells"]).pack()
+                Label(self.screen2, text="Epith Cells:").pack()
+                Entry(self.screen2, textvariable=self.Urine_RE_Result["Epith Cells"]).pack()
+                Label(self.screen2, text="Mucus Threads:").pack()
+                Entry(self.screen2, textvariable=self.Urine_RE_Result["Mucus Threads"]).pack()
+                Label(self.screen2, text="Ca Oxalate-Crystals:").pack()
+                Entry(self.screen2, textvariable=self.Urine_RE_Result["Ca Oxalate-Crystals"]).pack()
+                Label(self.screen2, text="Amorphous Urates:").pack()
+                Entry(self.screen2, textvariable=self.Urine_RE_Result["Amorphous Urates"]).pack()
+                Label(self.screen2, text="Granular Casts:").pack()
+                Entry(self.screen2, textvariable=self.Urine_RE_Result["Granular Casts"]).pack()
+                Label(self.screen2, text="Hyline Casts:").pack()
+                Entry(self.screen2, textvariable=self.Urine_RE_Result["Hyline Casts"]).pack()
+                Label(self.screen2, text="Yeast Cells:").pack()
+                Entry(self.screen2, textvariable=self.Urine_RE_Result["Yeast Cells"]).pack()
+
+            if self.tests["Uric Acid"].get():
+                Label(self.screen2, text="Uric Result:").pack()
+                OptionMenu(self.screen2, self.Uric_Acid_Result, "Positive", "Negative").pack()
+
+            Button(self.screen2, text="Save", command=self.save_report).pack()
+            Button(self.screen2, text="Print", command=self.print_report).pack()
+            Button(self.screen2, text="New Patient", command=self.reset).pack()
+
+    def next_screen(self):
+        self.current_screen = 2
+        self.screen1.destroy()
+        self.create_widgets()
+
+    def save_report(self):
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size=12)
+
+        pdf.cell(200, 10, txt=f"Name: {self.patient_name.get()}", ln=True)
+        pdf.cell(200, 10, txt=f"Age: {self.patient_age.get()}", ln=True)
+        pdf.cell(200, 10, txt=f"Gender: {self.patient_gender.get()}", ln=True)
+        pdf.cell(200, 10, txt=f"Date: {current_date()}", ln=True)
+
+        if self.tests["CBC"].get():
+            x = pdf.get_x()
+            y = pdf.get_y()
+            pdf.rect(x, y, 100, 40) 
+            pdf.cell(200, 10, txt="CBC Results", ln=True)
+            pdf.cell(200, 10, txt=f"TLC: {self.cbc_results['TLC'].get()} (Normal: {normal_values['TLC']})", ln=True, align="L")
+            pdf.cell(200, 10, txt=f"RBC: {self.cbc_results['RBC'].get()} (Normal: {normal_values['RBC']})", ln=True, align="L")
+            pdf.cell(200, 10, txt=f"HB: {self.cbc_results['Haemoglobin'].get()} (Normal: {normal_values['Haemoglobin']})", ln=True, align="L")
+            self.results["CBC"] = {
+            "TLC": self.cbc_results["TLC"].get(),
+            "RBC": self.cbc_results["RBC"].get(),
+            "HB": self.cbc_results["Haemoglobin"].get()
+        }
+            
+        if self.tests["CRP"].get():
+            x = pdf.get_x()
+            y = pdf.get_y()
+            pdf.rect(x, y, 100, 20) 
+            pdf.cell(200, 10, txt="CRP Result:", ln=True)
+            pdf.cell(200, 10, txt=f"CRP: {self.crp_result.get()} (Normal: {normal_values['CRP']})", ln=True, align="L")
+
+
+        if self.tests["BSR"].get():
+            x = pdf.get_x()
+            y = pdf.get_y()
+            pdf.rect(x, y, 100, 20) 
+            pdf.cell(200, 10, txt="BSR Result", ln=True)
+            pdf.cell(200, 10, txt=f"BSR: {self.bsr_result.get(StringVar)} (Normal: {normal_values['BSR']})", ln=True, align="L")
+            self.results["BSR"] = self.bsr_result.get(StringVar)
+
+        if self.tests["H-Pylori"].get():
+            x = pdf.get_x()
+            y = pdf.get_y()
+            pdf.rect(x, y, 100, 20) 
+            pdf.cell(200, 10, txt="H-Pylori Result", ln=True)
+            pdf.cell(200, 10, txt=f"H-Pylori: {self.h_pylori_result.get()} (Normal: {normal_values['H-Pylori']})", ln=True, align="L")
+            self.results["H-Pylori"] = self.h_pylori_result.get()
+
+        if self.tests["Trop-T"].get():
+            x = pdf.get_x()
+            y = pdf.get_y()
+            pdf.rect(x, y, 100, 20) 
+            pdf.cell(200, 10, txt="Trop-T Result", ln=True)
+            pdf.cell(200, 10, txt=f"Trop-T: {self.trop_t_result.get()} (Normal: {normal_values['Trop-T']})", ln=True, align="L")
+            self.results["Trop-T"] = self.trop_t_result.get()
+
+        if self.tests["Lipids"].get():
+            x = pdf.get_x()
+            y = pdf.get_y()
+            pdf.rect(x, y, 100, 20) 
+            pdf.cell(200, 10, txt="Lipid Profile", ln=True)
+            pdf.cell(200, 10, txt=f"Total Cholesterol: {self.lipids_result.get()} (Normal: {normal_values['Total Cholesterol']})", ln=True, align="L")
+            self.results["Total Cholesterol"] = self.lipids_result.get()
+
+
+        pdf.output("lab_report.pdf")
+
+        messagebox.showinfo("Save Report", "Report saved successfully!")
+
+    def print_report(self):
+        messagebox.showinfo("Print Report", "Report printed successfully!")
+
+    def reset(self):
+        self.current_screen = 1
+        self.patient_name.set("")
+        self.patient_age.set("")
+        self.patient_gender.set("")
+        for var in self.tests.values():
+            var.set(False)
+        for result in self.cbc_results.values():
+            result.set("")
+        self.crp_result.set("")
+        for result in self.bsr_result.values():
+            var.set(False)
+        self.h_pylori_result.set("")
+        self.trop_t_result.set("")
+        for result in self.lipids_result.values():
+            result.set(False)
+        for result in self.LFTs_result.values():
+            result.set(False)
+        for result in self.RFTs_result.values():
+            result.set(False)
+        for result in self.ALT_result.values():
+            result.set(False)
+        for result in self.Urine_RE_Result.values():
+            result.set(False)
+        self.Uric_Acid_Result.set("")
+        self.RA_Factor_Result.set("")
+        self.screen2.destroy()
+        self.create_widgets()
+    def create_widgets(self):
+        if self.current_screen == 1:
+            # Screen 1: Patient Information
+            self.screen1 = Toplevel(self.root)
+            self.screen1.title("Valley Medical Lab")
+            self.screen1.geometry("500x700")
+
+    # ... (rest of your code remains the same)
+
+        elif self.current_screen == 2:
+            # Screen 2: Result Input
+         self.screen2 = Toplevel(self.root)
+        self.screen2.title("Result Input")
+        self.screen2.geometry("600x750")
+
+    root = Tk()
+app =  LabReportingSoftware()
+root.mainloop()
